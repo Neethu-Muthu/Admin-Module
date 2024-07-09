@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Asset</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <nav class="flex justify-between items-center p-4 bg-white shadow-md">
+        <div class="space-x-4">
+            <a href="/assetInventory" class="text-blue-600 hover:text-gray-900">Home</a>
+        </div>
+        <div class="space-x-4">
+            <a href="/" class="text-blue-600 hover:text-gray-900">Logout</a>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4 w-1/2 mt-10 p-6 bg-gray-600 rounded-lg">
+        <div class="text-2xl text-center font-bold mb-4 text-white">Add New Asset</div>
+        <form id="assetForm" class="max-w-md mx-auto">
+            <div class="mb-4">
+                <label for="assetName" class="block text-sm font-medium text-gray-700">Asset Name:</label>
+                <input type="text" id="assetName" name="assetName" placeholder="Enter asset name"
+                    class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="assetType" class="block text-sm font-medium text-gray-700">Asset Type:</label>
+                <input type="text" id="assetType" name="assetType" placeholder="Enter asset type"
+                    class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="model" class="block text-sm font-medium text-gray-700">Model:</label>
+                <input type="text" id="model" name="model" placeholder="Enter asset model" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="serial" class="block text-sm font-medium text-gray-700">Serial Number:</label>
+                <input type="text" id="serial" name="serial" placeholder="Enter serial number" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="purchaseDate" class="block text-sm font-medium text-gray-700">Purchase Date:</label>
+                <input type="date" id="purchaseDate" name="purchaseDate" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty:</label>
+                <input type="text" id="warranty" name="warranty" placeholder="Enter warranty details" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter asset location" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+           
+            <!-- Add more fields as needed -->
+
+            <div class="flex justify-center">
+                <button type="submit"
+                    class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Save</button>
+                <button type="button"
+                    class="bg-gray-400 text-gray-700 py-2 px-4 ml-2 rounded-md hover:bg-gray-300 focus:outline-none focus:bg-gray-300">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Function to handle form submission
+        document.getElementById('assetForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submit action
+
+            // Collect form data
+            const formData = new FormData(this);
+            const assetData = {
+                assetName: formData.get('assetName'),
+                assetType: formData.get('assetType'),
+                model: formData.get('model'),
+                serialNumber: formData.get('serial'),
+                purchaseDate: formData.get('purchaseDate'),
+                warranty: formData.get('warranty'),
+                location: formData.get('location')
+            };
+
+            try {
+                // Send POST request to server
+                const response = await axios.post('/api/assets', assetData);
+                console.log('Asset added:', response.data);
+
+                // Optionally, show a success message or redirect to another page
+                alert('Asset added successfully!');
+                window.location.href = '/assetInventory'; // Redirect to asset inventory page
+            } catch (error) {
+                console.error('Error adding asset:', error);
+                alert('Failed to add asset.');
+            }
+        });
+    </script>
+   
+</body>
+
+</html>

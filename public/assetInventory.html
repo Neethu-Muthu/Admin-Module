@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Inventory Management</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <nav class="flex justify-between items-center p-4 bg-white shadow-md">
+        <div class="space-x-4">
+            <a href="/adminDashboard" class="text-blue-600 hover:text-gray-900">Home</a>
+        </div>
+        <div class="space-x-4">
+            <a href="/login" class="text-blue-600 hover:text-gray-900">Logout</a>
+        </div>
+    </nav>
+    <div class="container max-w-6xl mt-10 p-6 bg-white rounded-lg shadow-md">
+        <div class="text-2xl font-bold text-center mb-6 text-white">Asset Inventory Management</div>
+        <div class="text-right mb-6">
+            <a href='/addNewAsset'>
+                <button class="bg-blue-800 text-white rounded px-4 py-2 hover:bg-blue-600">Add New Asset</button>
+            </a>
+            <button class="bg-gray-200 text-gray-800 rounded px-4 py-2 ml-2">Search</button>
+            <button class="bg-gray-200 text-gray-800 rounded px-4 py-2 ml-2">Filter</button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Asset Name</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Asset Type</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Model</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Serial Number</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Purchase Date</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Warranty</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Location</th>
+                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="asset-table-body" class="divide-y divide-gray-200">
+                    <!-- Table rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const assetTableBody = document.getElementById('asset-table-body');
+
+            try {
+                const response = await axios.get('/api/assets');
+                const assets = response.data;
+
+                assets.forEach(asset => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border px-6 py-4">${asset.assetName}</td>
+                        <td class="border px-6 py-4">${asset.assetType}</td>
+                        <td class="border px-6 py-4">${asset.model}</td>
+                        <td class="border px-6 py-4">${asset.serialNumber}</td>
+                        <td class="border px-6 py-4">${new Date(asset.purchaseDate).toLocaleDateString()}</td>
+                        <td class="border px-6 py-4">${asset.warranty}</td>
+                        <td class="border px-6 py-4">${asset.location}</td>
+                        <td class="border px-6 py-4">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                                onclick="editAsset('${asset._id}')">Edit</button>
+                            <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600 ml-2"
+                                onclick="deleteAsset('${asset._id}')">Delete</button>
+                        </td>
+                    `;
+                    assetTableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error fetching assets:', error);
+                alert('Failed to fetch assets.');
+            }
+        });
+
+        async function editAsset(assetId) {
+            try {
+                const response = await axios.get(`/api/assets/${assetId}`);
+                const asset = response.data;
+
+                // Redirect to edit form page with asset details
+                window.location.href = `/addNewAsset?id=${asset._id}`;
+            } catch (error) {
+                console.error('Error editing asset:', error);
+                alert('Failed to edit asset.');
+            }
+        }
+
+        async function deleteAsset(assetId) {
+            if (confirm('Are you sure you want to delete this asset?')) {
+                try {
+                    const response = await axios.delete(`/api/assets/${assetId}`);
+                    if (response.status === 200) {
+                        alert('Asset deleted successfully!');
+                        // Optionally, update the UI by removing the deleted asset row
+                        // Example: document.getElementById(assetId).remove();
+                    }
+                } catch (error) {
+                    console.error('Error deleting asset:', error);
+                    alert('Failed to delete asset.');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
